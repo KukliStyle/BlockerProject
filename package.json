@@ -1,18 +1,19 @@
 {
-  "name": "git-security-scanner",
-  "version": "1.0.0",
-  "description": "Git Commit Security Scanner with Electron.js and Snyk",
-  "main": "src/main/main.js",
-  "scripts": {
-    "start": "electron .",
-    "test": "snyk test",
-    "prepare": "husky install"
-  },
-  "devDependencies": {
-    "electron": "^26.0.0",
-    "husky": "^8.0.3"
-  },
-  "dependencies": {
-    "snyk": "^1.1295.0"
-  }
+    "name": "git-security-scanner",
+    "version": "1.0.0",
+    "description": "Git Commit Security Scanner with Electron.js and Snyk",
+    "main": "src/main/main.js",
+    "scripts": {
+        "start": "electron .",
+        "test": "snyk test",
+        "prepare": "husky install"
+    },
+    "devDependencies": {
+        "electron": "^26.6.10",
+        "husky": "^8.0.3"
+    },
+    "dependencies": {
+        "snyk": "^1.1295.0"
+    }
+
 }
