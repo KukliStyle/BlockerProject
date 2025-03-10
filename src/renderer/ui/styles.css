@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+pre {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+    margin-top: 20px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

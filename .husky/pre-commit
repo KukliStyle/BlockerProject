@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running Snyk security scan before commit..."
+npx snyk test --severity-threshold=high || (echo "🚨 High-severity vulnerabilities found! Commit is blocked." && exit 1)

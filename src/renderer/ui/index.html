@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Security Scanner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Git Commit Security Scanner</h1>
+
+    <!-- Select directory button -->
+    <button id="selectDirButton">📁 Select Directory</button>
+    <span id="selectedDir">No directory selected</span>
+
+    <br><br>
+
+    <!-- Run scan button -->
+    <button id="scanButton" disabled>🔍 Run Security Scan</button>
+    
+    <button id="commitButton" disabled>✅ Commit Changes</button>
+
+    <button id="pushButton" disabled>⬆️ Push to GitHub</button>
+
+    <pre id="scanResults"></pre>
+
+    <script defer src="../renderer.js"></script>
+
+
+
+
+</body>
+</html>
