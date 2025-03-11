@@ -11,8 +11,6 @@
     "devDependencies": {
         "electron": "^26.6.10",
         "husky": "^8.0.3"
-    },
-    "dependencies": {
-        "snyk": "^1.1295.0"
     }
+    
 }
