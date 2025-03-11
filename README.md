@@ -1,6 +1,6 @@
 STEP 1 : Download node js from this link here https://nodejs.org/en/download
 
-STEP 2 : When you have node js installed pull all files from github to your repo on the pc
+STEP 2 : Pull all files onto a repo on your pc
 
 STEP 3 : Open the repo in cmd and type "npm init"
 
