@@ -43,6 +43,7 @@
         "http-cache-semantics": "^4.1.1",
         "http2-wrapper": "^1.0.3",
         "immediate": "^3.0.6",
+        "init": "^0.1.2",
         "json-buffer": "^3.0.1",
         "json-stringify-safe": "^5.0.1",
         "jsonfile": "^4.0.0",
