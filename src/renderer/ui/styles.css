@@ -26,3 +26,16 @@ pre {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
+body {
+    position: relative;
+    margin: 0;
+  }
+  
+.logo {
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    top: 0;
+    left: 0;
+ }
