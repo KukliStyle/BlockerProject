@@ -4,6 +4,10 @@ STEP 2 : When you have node js installed pull all files from github to your repo
 
 STEP 3 : Open the repo in cmd and type "npm init"
 
-STEP 4 : Type the command "npm install --save-dev electron" and wait for it to finish
+STEP 4 : Install up to date snyk npm install snyk -g
 
-STEP 5 : Test and launch the app using "npm start" command
+STEP 5 : Install up to date husky npm install --save-dev husky
+
+STEP 6 : Type the command "npm install --save-dev electron" and wait for it to finish
+
+STEP 7 : Test and launch the app using "npm start" command
