@@ -90,6 +90,21 @@ function getCurrentBranch(directoryPath, callback) {
     });
 }
 
+function isBranchBehindRemote(directoryPath, branch, callback) {
+    const cmd = `cd "${directoryPath}" && git fetch && git status -uno`;
+
+    exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.error("❌ Error checking sync status:", stderr);
+            callback(error, null);
+        } else {
+            const behind = stdout.includes("Your branch is behind");
+            callback(null, behind);
+        }
+    });
+}
+
+
 // ✅ Ensure a branch exists (create 'main' if missing)
 function ensureBranchExists(directoryPath, callback) {
     getCurrentBranch(directoryPath, (error, branch) => {
@@ -169,4 +184,19 @@ function pushChanges(directoryPath, branch, callback) {
     });
 }
 
-module.exports = { checkGitRepo, checkGitStatus, commitChanges, pushChanges , checkGitRemote , setGitRemote , ensureBranchAndCommit , ensureBranchAndCommit , ensureBranchExists ,ensureCommitExists};
+function pullLatestChanges(directoryPath, callback) {
+    const cmd = `cd "${directoryPath}" && git pull --rebase`;
+
+    exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.error("❌ Git Pull Error:", stderr);
+            callback(error, null);
+        } else {
+            console.log("✅ Git Pull Successful:\n", stdout);
+            callback(null, stdout);
+        }
+    });
+}
+
+
+module.exports = { checkGitRepo, checkGitStatus, commitChanges, pushChanges , checkGitRemote , setGitRemote , ensureBranchAndCommit , ensureBranchExists ,ensureCommitExists ,isBranchBehindRemote, pullLatestChanges};

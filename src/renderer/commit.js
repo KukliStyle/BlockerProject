@@ -2,16 +2,16 @@ const { ipcRenderer } = require("electron");
 
 let selectedDirectory = "";  // Store the directory path
 
-// Notify main process that the commit window is ready
-ipcRenderer.send("commit-window-ready");
-
-ipcRenderer.on("set-directory-path", (event, directoryPath) => {
-    selectedDirectory = directoryPath;
-    console.log("📂 Commit window received directory:", selectedDirectory);
-});
-
 document.addEventListener("DOMContentLoaded", () => {
     console.log("📝 Commit Window Loaded!");
+
+    // ✅ Send this after the renderer is fully ready
+    ipcRenderer.send("commit-window-ready");
+
+    ipcRenderer.on("set-directory-path", (event, directoryPath) => {
+        selectedDirectory = directoryPath;
+        console.log("📂 Commit window received directory:", selectedDirectory);
+    });
 
     document.getElementById("submitCommit").addEventListener("click", () => {
         const commitMessage = document.getElementById("commitMessage").value.trim();

@@ -1,7 +1,8 @@
 const { ipcMain, dialog } = require("electron");  //  Ensure dialog is imported
-const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,checkGitRemote, ensureBranchAndCommit ,ensureBranchExists , ensureCommitExists } = require("./git");
+const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,checkGitRemote, ensureBranchAndCommit ,ensureBranchExists , ensureCommitExists, isBranchBehindRemote, pullLatestChanges } = require("./git");
 const { runSnykScan } = require("./snyk");
 const { createCommitWindow, createRemoteWindow } = require("./windowManager");
+
 
 ipcMain.on("open-directory-dialog", async (event) => {
     console.log("📂 Received 'open-directory-dialog' event");
@@ -58,56 +59,6 @@ ipcMain.on("request-commit-message", (event, directoryPath) => {
 
 
 
-ipcMain.on("commit-changes", (event, directoryPath, commitMessage) => {
-    console.log(`🔹 Attempting commit in: ${directoryPath} with message: "${commitMessage}"`);
-
-    if (!directoryPath) {
-        dialog.showMessageBox({
-            type: "warning",
-            title: "Commit Error",
-            message: "⚠️ No directory selected!",
-            buttons: ["OK"]
-        });
-        return;
-    }
-
-    if (!commitMessage) {
-        dialog.showMessageBox({
-            type: "warning",
-            title: "Commit Error",
-            message: "⚠️ Commit message cannot be empty!",
-            buttons: ["OK"]
-        });
-        return;
-    }
-
-    commitChanges(directoryPath, commitMessage, (error, result) => {
-        let message = "";
-        let type = "info";
-
-        if (error) {
-            console.error("❌ Commit Error:", error);
-            message = `❌ Commit Failed: ${error.message}`;
-            type = "error";
-        } else {
-            console.log("✅ Commit Result:", result);
-            message = result.includes("nothing to commit") 
-                ? "⚠️ No changes detected. Nothing to commit." 
-                : `Commit message:\n${result}`;
-        }
-
-        dialog.showMessageBox({
-            type: type,
-            title: "Commit Status",
-            message: message,
-            buttons: ["OK"]
-        });
-
-        event.reply("commit-result", message);  //  Send result back to renderer
-    });
-});
-
-
 ipcMain.on("push-changes", (event, directoryPath) => {
     console.log("⬆️ Push request received for:", directoryPath);
 
@@ -121,19 +72,33 @@ ipcMain.on("push-changes", (event, directoryPath) => {
         return;
     }
 
-    //  Step 1: Check if remote is set
-    checkGitRemote(directoryPath, (remoteUrl, hasRemote) => {
-        if (!hasRemote) {
-            console.log("⚠️ No remote found. Opening remote setup window.");
-            createRemoteWindow();
-            event.reply("no-git-remote"); // Tell renderer to open remote input
-        } else {
-            console.log("✅ Remote found:", remoteUrl);
+    // ✅ Step 1: Run Snyk scan first
+    runSnykScan(directoryPath, (scanResult) => {
+        console.log("🔍 Pre-push Snyk Scan Result:\n", scanResult);
 
-            //  Step 2: Ensure branch and commit exist before pushing
+        const hasMediumOrHigh = /(?:(High|Medium)\s+severity)/i.test(scanResult);
+        if (hasMediumOrHigh) {
+            dialog.showMessageBox({
+                type: "error",
+                title: "Push Blocked",
+                message: "❌ Push blocked due to Medium or High severity vulnerabilities.\nPlease resolve them before pushing.",
+                buttons: ["OK"]
+            });
+
+            event.reply("push-result", "❌ Push blocked: vulnerabilities detected.");
+            return; // ✅ Prevents any push logic from continuing
+        }
+
+        // ✅ Step 2: Continue with remote + branch checks
+        checkGitRemote(directoryPath, (remoteUrl, hasRemote) => {
+            if (!hasRemote) {
+                createRemoteWindow();
+                event.reply("no-git-remote");
+                return;
+            }
+
             ensureBranchAndCommit(directoryPath, (error, branch) => {
                 if (error) {
-                    console.error("❌ Error ensuring branch & commit:", error);
                     dialog.showMessageBox({
                         type: "error",
                         title: "Push Failed",
@@ -144,35 +109,159 @@ ipcMain.on("push-changes", (event, directoryPath) => {
                     return;
                 }
 
-                console.log("📂 Ready to push to branch:", branch);
-
-                // Step 3: Push changes
-                pushChanges(directoryPath, branch, (error, result) => {
-                    let message = "";
-                    let type = "info";
-
-                    if (error) {
-                        console.error("❌ Push Error:", error);
-                        message = `❌ Push Failed: ${error.message}`;
-                        type = "error";
-                    } else {
-                        console.log("✅ Push Successful:\n", result);
-                        message = `✅ Push Successful:\n${result}`;
+                isBranchBehindRemote(directoryPath, branch, (err, behind) => {
+                    if (err) {
+                        event.reply("push-result", `❌ Could not check remote status.`);
+                        return;
                     }
 
-                    dialog.showMessageBox({
-                        type: type,
-                        title: "Push Status",
-                        message: message,
-                        buttons: ["OK"]
-                    });
+                    if (behind) {
+                        dialog.showMessageBox({
+                            type: "question",
+                            title: "Branch Behind Remote",
+                            message: "⚠️ Your branch is behind the remote.\nDo you want to pull the latest changes now?",
+                            buttons: ["Yes", "No"],
+                            defaultId: 0,
+                            cancelId: 1
+                        }).then(({ response }) => {
+                            if (response === 0) {
+                                pullLatestChanges(directoryPath, (pullErr, pullResult) => {
+                                    if (pullErr) {
+                                        dialog.showMessageBox({
+                                            type: "error",
+                                            title: "Pull Failed",
+                                            message: `❌ Pull failed:\n${pullErr.message}`,
+                                            buttons: ["OK"]
+                                        });
+                                        event.reply("push-result", "❌ Pull failed. Resolve conflicts manually.");
+                                        return;
+                                    }
 
-                    event.reply("push-result", message);
+                                    console.log("✅ Pull Successful. Proceeding to push...");
+                                    pushChanges(directoryPath, branch, (error, result) => {
+                                        let message = "";
+                                        let type = "info";
+
+                                        if (error) {
+                                            message = `❌ Push Failed: ${error.message}`;
+                                            type = "error";
+                                        } else {
+                                            message = `✅ Push Successful:\n${result}`;
+                                        }
+
+                                        dialog.showMessageBox({
+                                            type: type,
+                                            title: "Push Status",
+                                            message: message,
+                                            buttons: ["OK"]
+                                        });
+
+                                        event.reply("push-result", message);
+                                    });
+                                });
+                            } else {
+                                event.reply("push-result", "⚠️ Push canceled: Branch is behind.");
+                            }
+                        });
+
+                        return; // ✅ Critical: prevents fallthrough push
+                    }
+
+                    // ✅ Final push if branch is up-to-date
+                    pushChanges(directoryPath, branch, (error, result) => {
+                        let message = "";
+                        let type = "info";
+
+                        if (error) {
+                            message = `❌ Push Failed: ${error.message}`;
+                            type = "error";
+                        } else {
+                            message = `✅ Push Successful:\n${result}`;
+                        }
+
+                        dialog.showMessageBox({
+                            type: type,
+                            title: "Push Status",
+                            message: message,
+                            buttons: ["OK"]
+                        });
+
+                        event.reply("push-result", message);
+                    });
                 });
             });
-        }
+        });
     });
 });
+
+ipcMain.on("commit-changes", (event, directoryPath, commitMessage) => {
+    console.log(`📝 Received commit for: ${directoryPath} with message: "${commitMessage}"`);
+
+    if (!directoryPath) {
+        dialog.showMessageBoxSync({
+            type: "warning",
+            title: "Commit Error",
+            message: "⚠️ No directory selected!",
+            buttons: ["OK"]
+        });
+        return;
+    }
+
+    if (!commitMessage) {
+        dialog.showMessageBoxSync({
+            type: "warning",
+            title: "Commit Error",
+            message: "⚠️ Commit message cannot be empty!",
+            buttons: ["OK"]
+        });
+        return;
+    }
+
+    // Run Snyk scan before commit
+    runSnykScan(directoryPath, (scanResult) => {
+        console.log("🔍 Pre-commit Snyk Scan Result:\n", scanResult);
+
+        const hasMediumOrHigh = /(?:(High|Medium)\s+severity)/i.test(scanResult);
+        if (hasMediumOrHigh) {
+            dialog.showMessageBoxSync({
+                type: "error",
+                title: "Commit Blocked",
+                message: "❌ Commit blocked due to Medium or High severity vulnerabilities.\nPlease resolve them before committing.",
+                buttons: ["OK"]
+            });
+            event.reply("commit-result", "❌ Commit blocked: vulnerabilities detected.");
+            return;
+        }
+
+        commitChanges(directoryPath, commitMessage, (error, result) => {
+            let message = "";
+            let type = "info";
+
+            if (error) {
+                console.error("❌ Commit Error:", error);
+                message = `❌ Commit Failed: ${error.message}`;
+                type = "error";
+            } else {
+                message = result.includes("nothing to commit")
+                    ? "⚠️ No changes detected. Nothing to commit."
+                    : `✅ Commit Successful:\n${result}`;
+            }
+
+            dialog.showMessageBoxSync({
+                type: type,
+                title: "Commit Status",
+                message: message,
+                buttons: ["OK"]
+            });
+
+            event.reply("commit-result", message);
+        });
+    });
+});
+
+
+
+
 
 //  Handle setting the remote
 ipcMain.on("set-git-remote", (event, directoryPath, remoteUrl) => {

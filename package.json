@@ -5,12 +5,10 @@
     "main": "src/main/main.js",
     "scripts": {
         "start": "electron .",
-        "test": "snyk test",
-        "prepare": "husky install"
+        "test": "snyk test"
     },
     "devDependencies": {
-        "electron": "^26.6.10",
-        "husky": "^8.0.3"
+        "electron": "^26.6.10"
     },
     "dependencies": {
         "boolean": "^3.2.0",
