@@ -1,5 +1,5 @@
 const { app } = require("electron");
-const { createMainWindow } = require("./windowManager");
+const { createMainWindow } = require("./WindowManager.js");
 require("./ipcHandlers"); // Loads all IPC logic
 
 app.whenReady().then(createMainWindow);

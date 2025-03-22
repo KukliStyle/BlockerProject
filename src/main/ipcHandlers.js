@@ -1,7 +1,7 @@
 const { ipcMain, dialog } = require("electron");  //  Ensure dialog is imported
 const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,checkGitRemote, ensureBranchAndCommit ,ensureBranchExists , ensureCommitExists, isBranchBehindRemote, pullLatestChanges } = require("./git");
 const { runSnykScan } = require("./snyk");
-const { createCommitWindow, createRemoteWindow } = require("./windowManager");
+const { createCommitWindow, createRemoteWindow } = require("./WindowManager.js");
 
 
 ipcMain.on("open-directory-dialog", async (event) => {

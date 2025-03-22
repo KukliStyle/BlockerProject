@@ -5,11 +5,38 @@
     "main": "src/main/main.js",
     "scripts": {
         "start": "electron .",
-        "test": "snyk test"
+        "test": "snyk test",
+        "dist": "electron-builder"
     },
     "devDependencies": {
-        "electron": "^26.6.10"
+        "electron": "^26.6.10",
+        "electron-builder": "^25.1.8"
     },
+
+    "build": {
+    "appId": "com.gitsecurity.scanner",
+    "productName": "Git Security Scanner",
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/logo.ico",
+      "target": "nsis"
+    }
+
+},
+"mac": {
+  "target": []
+},
+"linux": {
+  "target": []
+
+  },
     "dependencies": {
         "boolean": "^3.2.0",
         "buffer-crc32": "^0.2.13",
