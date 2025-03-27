@@ -1,4 +1,5 @@
 const { ipcRenderer } = require("electron");
+const Chart = require("chart.js/auto");
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ Renderer.js Loaded!");
@@ -9,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pushButton = document.getElementById("pushButton");
     const selectedDirElement = document.getElementById("selectedDir");
     const scanResultsElement = document.getElementById("scanResults");
+
+    let chartInstance = null;
 
     if (!selectDirButton || !scanButton || !commitButton || !pushButton || !selectedDirElement) {
         console.error("❌ ERROR: One or more elements were not found in the DOM.");
@@ -50,15 +53,97 @@ document.addEventListener("DOMContentLoaded", () => {
     
 
     ipcRenderer.on("snyk-scan-result", (event, result) => {
-        console.log("🔍 Snyk Scan Result:", result);
-    
-        const scanResultElement = document.getElementById("scanResults");
-        if (scanResultElement) {
-            scanResultElement.innerText = `🔍 Snyk Scan Results:\n${result}`;
-        } else {
-            console.error("❌ ERROR: 'scanResults' element not found!");
+    const severityDetails = {
+        high: [],
+        medium: [],
+        low: [],
+        info: []
+    };
+
+    // Extract lines like "✗ SQL Injection [High Severity]"
+    const lines = result.split("\n");
+    lines.forEach(line => {
+        const match = line.match(/✗ (.*?) \[(High|Medium|Low|Info) Severity\]/i);
+        if (match) {
+            const vuln = match[1].trim();
+            const severity = match[2].toLowerCase();
+            if (severityDetails[severity]) {
+                severityDetails[severity].push(vuln);
+            }
         }
     });
+
+    const severityCounts = {
+        high: severityDetails.high.length,
+        medium: severityDetails.medium.length,
+        low: severityDetails.low.length,
+        info: severityDetails.info.length
+    };
+
+    if (chartInstance) chartInstance.destroy();
+
+    const ctx = document.getElementById("vulnChart").getContext("2d");
+    chartInstance = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: ["High", "Medium", "Low", "Info"],
+            datasets: [{
+                data: [
+                    severityCounts.high,
+                    severityCounts.medium,
+                    severityCounts.low,
+                    severityCounts.info
+                ],
+                backgroundColor: ["#e74c3c", "#f39c12", "#2ecc71", "#95a5a6"]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+    enabled: true,
+    displayColors: false,
+    usePointStyle: true,
+    boxPadding: 5,
+    padding: 10,
+    bodyFont: {
+        size: 12
+    },
+    callbacks: {
+        label: function (context) {
+            const label = context.label;
+            const value = context.raw;
+            const lower = label.toLowerCase();
+            const list = severityDetails[lower];
+
+            if (!list || list.length === 0) return [`${label} (${value}): None`];
+
+            // Chunk lines to prevent very long strings
+            const maxPerLine = 1;
+            const formatted = [`${label} (${value}):`];
+            for (let i = 0; i < list.length; i += maxPerLine) {
+                formatted.push(`→ ${list.slice(i, i + maxPerLine).join(", ")}`);
+            }
+            return formatted;
+        }
+    }
+}
+,
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Vulnerabilities by Severity'
+                }
+            }
+        }
+    });
+
+    // Raw output shown below chart
+    document.getElementById("scanTextOutput").innerText = result;
+});
+
     
 
     commitButton.addEventListener("click", () => {
