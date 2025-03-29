@@ -10,6 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const pushButton = document.getElementById("pushButton");
     const selectedDirElement = document.getElementById("selectedDir");
     const scanResultsElement = document.getElementById("scanResults");
+    const issuesWithFixes = [];
+    const aiSuggestedFixes = {
+    "SQL Injection": "Use parameterized queries or an ORM",
+    "Cross-Site Scripting": "Sanitize user inputs and encode HTML output",
+    "Prototype Pollution": "Use safe versions of affected packages or validate object properties",
+    "Command Injection": "Avoid using user input directly in system commands",
+    "Insecure Deserialization": "Do not deserialize untrusted data; use safe parsers",
+    "Open Redirect": "Validate and whitelist redirect URLs",
+    "Arbitrary File Write": "Use secure file system access and validate file paths",
+    "Directory Traversal": "Normalize and validate user-supplied file paths"
+};
+
 
     let chartInstance = null;
 
@@ -24,16 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
         ipcRenderer.send("open-directory-dialog");
     });
 
-     // Receive selected directory
-     ipcRenderer.on("selected-directory", (event, path) => {
-        console.log("📂 Selected Directory:", path);
-        selectedDirElement.innerText = `📂 Selected: ${path}`;
+ipcRenderer.on("selected-directory", (event, path) => {
+  console.log("📂 Selected Directory:", path);
+  selectedDirElement.innerText = `📂 Selected: ${path}`;
 
-        // ✅ Enable buttons after directory is selected
-        scanButton.disabled = false;
-        commitButton.disabled = false;
-        pushButton.disabled = false;
-    });
+  scanButton.disabled = false;
+  commitButton.disabled = false;
+  pushButton.disabled = false;
+
+  selectedDirectory = path; // Make sure this line is there!
+});
+
+
 
     // Run security scan
     scanButton.addEventListener("click", () => {
@@ -79,6 +93,33 @@ document.addEventListener("DOMContentLoaded", () => {
         low: severityDetails.low.length,
         info: severityDetails.info.length
     };
+
+    for (let i = 0; i < lines.length; i++) {
+    const vulnMatch = lines[i].match(/✗ (.*?) \[(High|Medium|Low|Info) Severity\]/i);
+    if (vulnMatch) {
+        const vuln = vulnMatch[1].trim();
+
+        // Look ahead to find a "Fixed in:" line
+        const fixLine = lines[i + 2] || "";
+        const fixMatch = fixLine.match(/Fixed in: (.*)/i);
+
+        if (fixMatch) {
+            const fixedVersion = fixMatch[1].trim();
+            issuesWithFixes.push({
+                issue: vuln,
+                fix: fixedVersion
+            });
+        } else {
+            issuesWithFixes.push({
+                issue: vuln,
+                fix: null
+            });
+        }
+    }
+}
+
+
+
 
     if (chartInstance) chartInstance.destroy();
 
@@ -202,3 +243,65 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
 });
+
+const themeToggleBtn = document.getElementById("toggleTheme");
+
+themeToggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+
+    // Optional: Persist in localStorage
+    const isDark = document.body.classList.contains("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    // existing setup code...
+});
+
+function storeRecentDirectory(dir) {
+  let dirs = JSON.parse(localStorage.getItem("recentDirs") || "[]");
+
+  if (!dirs.includes(dir)) {
+    dirs.push(dir); // Add to list
+    localStorage.setItem("recentDirs", JSON.stringify(dirs));
+    renderRecentDirs();
+  }
+}
+
+
+function renderRecentDirs() {
+  const list = document.getElementById("recentDirsList");
+  if (!list) return;
+
+  const dirs = JSON.parse(localStorage.getItem("recentDirs") || "[]");
+  list.innerHTML = "";
+
+  dirs.forEach(dir => {
+    const li = document.createElement("li");
+    li.innerHTML = `<button class="recent-dir-button" data-path="${dir}">${dir}</button>`;
+    list.appendChild(li);
+  });
+
+  // Add click listeners after rendering
+  document.querySelectorAll(".recent-dir-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const dir = btn.getAttribute("data-path");
+      console.log("🖱 Clicked recent directory:", dir);
+      ipcRenderer.send("simulate-directory-selection", dir);
+    });
+  });
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderRecentDirs();
+});
+
+let selectedDirectory = "";

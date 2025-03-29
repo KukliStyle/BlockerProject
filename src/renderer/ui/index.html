@@ -1,42 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Security Scanner</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Git Security Scanner</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-    <img class="logo" src="images/logo.png" alt="logo">
+  <!-- ✅ Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-logo">
+  <img src="images/logo.png" alt="App Logo" class="nav-logo-img" />
+  <span>Git Security Scanner</span>
+</div>
 
-    <h1>Git Commit Security Scanner</h1>
 
-    <!-- Select directory button -->
-    <button id="selectDirButton">📁 Select Directory</button>
-    <span id="selectedDir">No directory selected</span>
-
-    <br><br>
-
-    <!-- Run scan button -->
-    <button id="scanButton" disabled>🔍 Run Security Scan</button>
-    
-    <button id="commitButton" disabled>✅ Commit Changes</button>
-
-    <button id="pushButton" disabled>⬆️ Push to GitHub</button>
-
-    <div class="chart-card">
-    <section id="scanResultSection">
-    <canvas id="vulnChart"</canvas>
-    <div id="scanTextOutput" class="scan-output"></div>
-    </section>
+    <div class="nav-dropdown">
+      <button class="nav-button">Git Actions ⬇</button>
+      <div class="dropdown-content">
+        <button id="selectDirButton">📁 Select Directory</button>
+        <button id="commitButton" disabled>✅ Commit Changes</button>
+        <button id="pushButton" disabled>⬆️ Push to GitHub</button>
+      </div>
     </div>
 
+    <div class="nav-dropdown">
+      <button class="nav-button">Scan ⬇</button>
+      <div class="dropdown-content">
+        <button id="scanButton" disabled>🔍 Run Security Scan</button>
+      </div>
+    </div>
 
-    <script defer src="../renderer.js"></script>
+    <div class="nav-theme">
+      <button id="toggleTheme" class="theme-toggle">🌗 Toggle Theme</button>
+    </div>
+  </nav>
 
 
+  <h1>Git Commit Security Scanner</h1>
+  <span id="selectedDir">No directory selected</span>
+
+  <div class="scan-results-wrapper">
+    <div class="chart-card">
+      <section id="scanResultSection">
+        <canvas id="vulnChart"></canvas>
+        <div id="scanTextOutput" class="scan-output"></div>
+      </section>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+  <h3>📁 Recent Directories</h3>
+  <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
+</aside>
 
 
+  <!-- ✅ Main Script -->
+  <script defer src="../renderer.js"></script>
 </body>
 </html>

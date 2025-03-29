@@ -1,50 +1,104 @@
+/* ===== Base Styling ===== */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  background-color: #f4f4f4;
+  position: relative;
 }
 
 h1 {
-    color: #333;
+  color: #333;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-pre {
-    background: #fff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: left;
-    margin-top: 20px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-body {
-    position: relative;
-    margin: 0;
-  }
-  
+/* ===== Logo ===== */
 .logo {
-    width: 75px;
-    height: 75px;
-    position: absolute;
-    top: 0;
-    left: 0;
- }
+  width: 75px;
+  height: 75px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
- #vulnChart {
-  max-width: 300px;      
+/* ===== Top Navigation Bar ===== */
+.top-nav {
+  background-color: #ffffff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  top: 100%;
+  left: 0;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.dropdown-content button {
+  background-color: white;
+  color: black;
+  padding: 10px 14px;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #f1f1f1;
+}
+
+.nav-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* ===== Chart & Layout ===== */
+#vulnChart {
+  max-width: 300px;
   height: 300px;
   display: block;
-  margin: 20px auto;     
+  margin: 20px auto;
 }
 
 .chart-card {
@@ -53,11 +107,46 @@ body {
   padding: 20px;
   background-color: #fff;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: visible;
   position: relative;
-  overflow: visible; 
   z-index: 10;
 }
 
+/* ===== Chart + Fix Layout (optional section) ===== */
+.scan-results-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.fixes-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  max-width: 320px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 5;
+  position: relative;
+}
+
+.fix-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.95rem;
+}
+
+.fix-list li {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+/* ===== Output Console ===== */
 .scan-output {
   margin-top: 20px;
   font-size: 0.9rem;
@@ -71,3 +160,146 @@ body {
   overflow-x: auto;
 }
 
+/* ===== Code Blocks ===== */
+pre {
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  margin-top: 20px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ===== Dark Mode ===== */
+body.dark-mode {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+body.dark-mode .chart-card,
+body.dark-mode .fixes-card,
+body.dark-mode .scan-output,
+body.dark-mode pre {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border-color: #333;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode button {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode .top-nav {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+body.dark-mode .dropdown-content {
+  background-color: #2a2a2a;
+}
+
+body.dark-mode .dropdown-content button {
+  color: #fff;
+}
+
+body.dark-mode .dropdown-content button:hover {
+  background-color: #3a3a3a;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  gap: 10px;
+}
+
+.nav-logo-img {
+  height: 60px;
+  width: 60px;
+  object-fit: contain;
+}
+
+
+/* ===== Theme Toggle Button ===== */
+.theme-toggle {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.sidebar {
+  max-height: 400px;
+  width: 250px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  overflow-y: auto;
+}
+
+.recent-dirs {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.recent-dirs li {
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+  color: #007bff;
+  word-break: break-all;
+}
+
+.recent-dirs li:hover {
+  text-decoration: underline;
+}
+
+.scrollable-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+body.dark-mode .sidebar {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  box-shadow: 0 0 12px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .recent-dirs li {
+  color: #66aaff;
+}
+
+.recent-dir-button {
+  display: block;
+  width: 100%;
+  background-color: #f0f8ff;
+  color: #007bff;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.recent-dir-button:hover {
+  background-color: #e6f0ff;
+}
+
+body.dark-mode .recent-dir-button {
+  background-color: #1e2a3a;
+  color: #66aaff;
+  border-color: #444;
+}
+
+body.dark-mode .recent-dir-button:hover {
+  background-color: #293b52;
+}
