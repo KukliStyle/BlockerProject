@@ -3,6 +3,17 @@ const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,
 const { runSnykScan } = require("./snyk");
 const { createCommitWindow, createRemoteWindow } = require("./WindowManager.js");
 
+let Store;
+(async () => {
+  const module = await import("electron-store");
+  Store = module.default;
+
+  const scanStore = new Store({ name: "scan-history" });
+
+  // Make it globally available if needed
+  global.scanStore = scanStore;
+})();
+
 
 ipcMain.on("open-directory-dialog", async (event) => {
     console.log("📂 Received 'open-directory-dialog' event");
@@ -33,9 +44,10 @@ ipcMain.on("run-snyk-scan", (event, directoryPath) => {
     }
 
     runSnykScan(directoryPath, (scanResult) => {
-        console.log("🔍 Snyk Scan Complete:\n", scanResult);
-        event.reply("snyk-scan-result", scanResult);
-    });
+  saveScanResult(directoryPath, scanResult); // ✅ store it
+  event.reply("snyk-scan-result", scanResult);
+});
+
 });
 
 ipcMain.on("request-commit-message", (event, directoryPath) => {
@@ -85,6 +97,7 @@ ipcMain.on("push-changes", (event, directoryPath) => {
                 buttons: ["OK"]
             });
 
+            event.sender.send("scan-history-updated");
             event.reply("push-result", "❌ Push blocked: vulnerabilities detected.");
             return; // ✅ Prevents any push logic from continuing
         }
@@ -289,4 +302,18 @@ ipcMain.on("set-git-remote", (event, directoryPath, remoteUrl) => {
 
         event.reply("remote-setup-result", message);
     });
+});
+
+function saveScanResult(directoryPath, scanOutput) {
+  const history = scanStore.get("scans") || [];
+  history.push({
+    timestamp: new Date().toISOString(),
+    path: directoryPath,
+    result: scanOutput
+  });
+  scanStore.set("scans", history);
+}
+
+ipcMain.handle("get-scan-history", () => {
+  return scanStore.get("scans") || [];
 });

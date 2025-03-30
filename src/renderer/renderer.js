@@ -307,6 +307,38 @@ function renderRecentDirs() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderRecentDirs();
+  renderScanHistory();
 });
 
 let selectedDirectory = "";
+
+function renderScanHistory() {
+  ipcRenderer.invoke("get-scan-history").then(history => {
+    console.log("📜 Scan History:", history);
+
+    const historyList = document.getElementById("scanHistoryList");
+    if (!historyList) return;
+
+    historyList.innerHTML = "";
+
+    if (!history || history.length === 0) {
+      const emptyMsg = document.createElement("li");
+      emptyMsg.textContent = "📭 No scans yet. Run a scan to get started.";
+      emptyMsg.style.color = "#777";
+      historyList.appendChild(emptyMsg);
+      return;
+    }
+
+    history.slice().reverse().forEach(scan => {
+      const item = document.createElement("li");
+      item.innerHTML = `
+        <strong>${scan.path}</strong><br>
+        <small>${new Date(scan.timestamp).toLocaleString()}</small><br>
+        <pre>${scan.result.slice(0, 300)}...</pre>
+      `;
+      historyList.appendChild(item);
+    });
+
+    historyList.scrollTop = 0; // Scroll to top after update
+  });
+}
