@@ -40,12 +40,17 @@ ipcRenderer.on("selected-directory", (event, path) => {
   console.log("📂 Selected Directory:", path);
   selectedDirElement.innerText = `📂 Selected: ${path}`;
 
+  // ✅ Store it in recent list
+  storeRecentDirectory(path);
+
+  // ✅ Enable buttons
   scanButton.disabled = false;
   commitButton.disabled = false;
   pushButton.disabled = false;
 
-  selectedDirectory = path; // Make sure this line is there!
+  selectedDirectory = path;
 });
+
 
 
 

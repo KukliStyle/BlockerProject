@@ -1,11 +1,12 @@
 /* ===== Base Styling ===== */
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
-  margin: 0;
   background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
   position: relative;
+  color: #333;
+  text-align: center;
 }
 
 h1 {
@@ -44,8 +45,17 @@ button {
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
   font-weight: bold;
   font-size: 1.1rem;
+  gap: 10px;
+}
+
+.nav-logo-img {
+  height: 60px;
+  width: 60px;
+  object-fit: contain;
 }
 
 .nav-dropdown {
@@ -93,7 +103,104 @@ button {
   display: block;
 }
 
-/* ===== Chart & Layout ===== */
+/* ===== App Layout ===== */
+.app-body {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 300;
+  padding: 20px;
+  background: #fff;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  height: fit-content; 
+  max-height: 430px;
+}
+
+
+.content-area {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* ===== Recent Directories ===== */
+.recent-dirs {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.recent-dirs li {
+  margin-bottom: 8px;
+}
+
+.recent-dir-button {
+  display: block;
+  width: 100%;
+  background-color: #f0f8ff;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  font-family: inherit;
+  text-decoration: none;
+  white-space: normal;   
+  word-break: break-word; 
+  overflow-wrap: break-word;
+}
+
+
+.recent-dir-button:hover {
+  background-color: #e6f0ff;
+  color: #000; 
+}
+
+.scrollable-list {
+  max-height: 120px;    
+  overflow-y: auto;
+  overflow-x: auto;     
+  white-space: nowrap;   
+  padding-right: 5px;
+  margin-top: 10px;
+}
+
+
+
+
+
+/* Optional: Style the scrollbar for WebKit (Chrome/Edge) */
+.scrollable-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+body.dark-mode .scrollable-list::-webkit-scrollbar-thumb {
+  background-color: #444;
+}
+
+
+/* ===== Chart & Output Section ===== */
 #vulnChart {
   max-width: 300px;
   height: 300px;
@@ -106,47 +213,10 @@ button {
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  overflow: visible;
-  position: relative;
-  z-index: 10;
-}
-
-/* ===== Chart + Fix Layout (optional section) ===== */
-.scan-results-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  margin-top: 30px;
-}
-
-.fixes-card {
-  background-color: #fff;
-  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  max-width: 320px;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 5;
-  position: relative;
 }
 
-.fix-list {
-  list-style: none;
-  padding-left: 0;
-  font-size: 0.95rem;
-}
-
-.fix-list li {
-  margin-bottom: 6px;
-  line-height: 1.4;
-}
-
-/* ===== Output Console ===== */
 .scan-output {
   margin-top: 20px;
   font-size: 0.9rem;
@@ -160,7 +230,6 @@ button {
   overflow-x: auto;
 }
 
-/* ===== Code Blocks ===== */
 pre {
   background: #fff;
   padding: 10px;
@@ -171,25 +240,18 @@ pre {
   word-wrap: break-word;
 }
 
+/* ===== Theme Toggle Button ===== */
+.theme-toggle {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+
 /* ===== Dark Mode ===== */
 body.dark-mode {
   background-color: #121212;
   color: #f0f0f0;
-}
-
-body.dark-mode .chart-card,
-body.dark-mode .fixes-card,
-body.dark-mode .scan-output,
-body.dark-mode pre {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  border-color: #333;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
-}
-
-body.dark-mode button {
-  background-color: #444;
-  color: #fff;
 }
 
 body.dark-mode .top-nav {
@@ -209,97 +271,29 @@ body.dark-mode .dropdown-content button:hover {
   background-color: #3a3a3a;
 }
 
-.nav-logo {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  font-size: 1.1rem;
-  gap: 10px;
-}
-
-.nav-logo-img {
-  height: 60px;
-  width: 60px;
-  object-fit: contain;
-}
-
-
-/* ===== Theme Toggle Button ===== */
-.theme-toggle {
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-.sidebar {
-  max-height: 400px;
-  width: 250px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
-  overflow-y: auto;
-}
-
-.recent-dirs {
-  list-style: none;
-  padding-left: 0;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-.recent-dirs li {
-  margin-bottom: 8px;
-  cursor: pointer;
-  text-align: left;
-  color: #007bff;
-  word-break: break-all;
-}
-
-.recent-dirs li:hover {
-  text-decoration: underline;
-}
-
-.scrollable-list {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
+body.dark-mode .chart-card,
+body.dark-mode .fixes-card,
+body.dark-mode .scan-output,
+body.dark-mode pre,
 body.dark-mode .sidebar {
   background-color: #1e1e1e;
   color: #f0f0f0;
-  box-shadow: 0 0 12px rgba(255,255,255,0.05);
+  border-color: #333;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
 }
 
-body.dark-mode .recent-dirs li {
-  color: #66aaff;
-}
-
-.recent-dir-button {
-  display: block;
-  width: 100%;
-  background-color: #f0f8ff;
-  color: #007bff;
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  margin-bottom: 10px;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  transition: background 0.2s;
-}
-
-.recent-dir-button:hover {
-  background-color: #e6f0ff;
-}
-
+body.dark-mode button,
 body.dark-mode .recent-dir-button {
-  background-color: #1e2a3a;
-  color: #66aaff;
+  background-color: #444;
+  color: #fff;
   border-color: #444;
 }
 
 body.dark-mode .recent-dir-button:hover {
   background-color: #293b52;
+}
+
+body.dark-mode .content-area {
+  background-color: #121212;
+  color: #f0f0f0;
 }

@@ -41,19 +41,25 @@
   <h1>Git Commit Security Scanner</h1>
   <span id="selectedDir">No directory selected</span>
 
-  <div class="scan-results-wrapper">
-    <div class="chart-card">
-      <section id="scanResultSection">
-        <canvas id="vulnChart"></canvas>
-        <div id="scanTextOutput" class="scan-output"></div>
-      </section>
-    </div>
-  </div>
-
+  <div class="app-body">
   <aside class="sidebar">
-  <h3>📁 Recent Directories</h3>
-  <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
-</aside>
+    <h3>📁 Recent Directories</h3>
+    <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
+  </aside>
+
+  <main class="content-area">
+    <div class="scan-results-wrapper">
+      <div class="chart-card">
+        <section id="scanResultSection">
+          <canvas id="vulnChart"></canvas>
+          <div id="scanTextOutput" class="scan-output"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+
 
 
   <!-- ✅ Main Script -->
