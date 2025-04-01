@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Git Log Viewer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+
+  <nav class="top-nav">
+    <div class="nav-logo">
+      <img src="images/logo.png" alt="App Logo" class="nav-logo-img" />
+      <span>Git Log Viewer</span>
+    </div>
+
+    <div class="nav-dropdown">
+      <button class="nav-button" onclick="location.href='index.html'">🏠 Home</button>
+      <button id="toggleTheme" class="theme-toggle">🌗</button>
+    </div>
+  </nav>
+
+  <aside class="sidebar">
+  <h3>📁 Recent Directories</h3>
+  <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
+</aside>
+
+
+  <h1>📝 Git Commit Log</h1>
+
+  <div class="git-log-controls">
+    <input type="text" id="logSearch" placeholder="Search commits..." />
+  </div>
+
+  <ul id="gitLogList" class="history-list"></ul>
+
+
+  <script defer src="../GitLogRenderer.js"></script>
+</body>
+</html>

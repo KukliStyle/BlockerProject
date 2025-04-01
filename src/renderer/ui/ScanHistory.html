@@ -1,0 +1,37 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scan History</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-logo">
+      <img src="images/logo.png" class="nav-logo-img" />
+      <span>Git Security Scanner</span>
+    </div>
+    <div class="nav-dropdown">
+      <button class="nav-button" onclick="location.href='index.html'">🏠 Dashboard</button>
+      <button id="toggleTheme" class="theme-toggle">🌗</button>
+    </div>
+  </nav>
+
+   <section class="export-section">
+  <h3>⬇ Export Scan History</h3>
+  <select id="exportFormat">
+    <option value="txt">.txt</option>
+    <option value="pdf">.pdf</option>
+    <option value="md">.md</option>
+  </select>
+  <button id="exportScanButton">Export</button>
+</section>
+
+
+  <h1>🕓 Scan History</h1>
+  <ul id="scanHistoryList" class="history-list"></ul>
+
+  <script src="../ScanHistoryRenderer.js"></script>
+</body>
+</html>

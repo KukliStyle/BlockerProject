@@ -5,6 +5,9 @@ const { createCommitWindow, createRemoteWindow } = require("./WindowManager.js")
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit"); 
+const simpleGit = require("simple-git");
+const git = simpleGit();
+const { exec } = require("child_process");
 
 let store;
 async function initStore() {
@@ -351,4 +354,41 @@ ipcMain.handle("export-scan-history", async (event, format) => {
 
   fs.writeFileSync(filePath, content);
   return { success: true, message: "Export complete!" };
+});
+
+ipcMain.handle("get-git-log", async (event, directoryPath) => {
+  return new Promise((resolve, reject) => {
+    if (!directoryPath) {
+      console.error("❌ No directory path provided for git log");
+      return resolve([]);
+    }
+
+    const logCommand = `git log --pretty=format:"%H||%an||%ad||%s" --date=short -n 30`;
+    exec(logCommand, { cwd: directoryPath }, (error, stdout) => {
+      if (error) {
+        console.error("❌ Git log error:", error.message);
+        return resolve([]);
+      }
+
+      const commits = stdout.trim().split("\n").map(line => {
+        const [hash, author, date, message] = line.split("||");
+        return { hash, author, date, message, diff: "" };
+      });
+
+      // Fetch diffs for each commit using `git show`
+      const fetchDiffs = commits.map(commit => {
+        return new Promise((res) => {
+          exec(`git show ${commit.hash} --stat --oneline --no-color`, { cwd: directoryPath }, (err, diffOut) => {
+            commit.diff = err ? "No diff available" : diffOut.trim();
+            res(commit);
+          });
+        });
+      });
+
+      Promise.all(fetchDiffs).then(resolve).catch(err => {
+        console.error("❌ Error resolving diffs:", err);
+        resolve(commits);
+      });
+    });
+  });
 });

@@ -179,7 +179,7 @@ ipcRenderer.on("selected-directory", (event, path) => {
         }
     });
 
-    // Raw output shown below chart
+
     document.getElementById("scanTextOutput").innerText = result;
 });
 
@@ -226,15 +226,12 @@ ipcRenderer.on("selected-directory", (event, path) => {
     
         ipcRenderer.send("push-changes", directoryPath);
     });
-    
-    // Show push result in a popup
+
     ipcRenderer.on("push-result", (event, result) => {
         console.log("⬆️ Push Result:", result);
         alert(result);
     });
-    
-    
-    // If no remote exists, notify the user
+ 
     ipcRenderer.on("no-git-remote", () => {
         alert("⚠️ No Git remote found! Please enter a GitHub URL.");
     });
@@ -247,7 +244,7 @@ const themeToggleBtn = document.getElementById("toggleTheme");
 themeToggleBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
 
-    // Optional: Persist in localStorage
+    
     const isDark = document.body.classList.contains("dark-mode");
     localStorage.setItem("theme", isDark ? "dark" : "light");
 });
@@ -258,14 +255,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add("dark-mode");
     }
 
-    // existing setup code...
 });
 
 function storeRecentDirectory(dir) {
   let dirs = JSON.parse(localStorage.getItem("recentDirs") || "[]");
 
   if (!dirs.includes(dir)) {
-    dirs.push(dir); // Add to list
+    dirs.push(dir);
     localStorage.setItem("recentDirs", JSON.stringify(dirs));
     renderRecentDirs();
   }
@@ -285,7 +281,6 @@ function renderRecentDirs() {
     list.appendChild(li);
   });
 
-  // Add click listeners after rendering
   document.querySelectorAll(".recent-dir-button").forEach(btn => {
     btn.addEventListener("click", () => {
       const dir = btn.getAttribute("data-path");
@@ -324,7 +319,7 @@ function renderScanHistory() {
       historyList.appendChild(item);
     });
 
-    historyList.scrollTop = 0; // Scroll to top after update
+    historyList.scrollTop = 0; 
   });
 }
 
@@ -369,3 +364,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRecentDirs();
   renderScanHistory();
 });
+
+function showTab(tabName) {
+  const allSections = document.querySelectorAll(".tab-section");
+  allSections.forEach(section => section.style.display = "none");
+
+  document.getElementById(`${tabName}Section`).style.display = "block";
+}
+
+selectedDirectory = path;
+localStorage.setItem("lastSelectedDir", path);
