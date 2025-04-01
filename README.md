@@ -1,11 +1,8 @@
-STEP 1 : Download node js from this link here https://nodejs.org/en/download
+STEP 1 : Go to releases on this github repo
 
-STEP 2 : Pull all files onto a repo on your pc
+STEP 2 : Go and download the latest version
 
-STEP 3 : Open the repo in cmd and type "npm init"
+STEP 3 : Run the installer
 
-STEP 4 : Install up to date snyk "npm install snyk -g"
+STEP 4 : Youre done just open the app using the desktop shortcut
 
-STEP 5 : Type the command "npm install --save-dev electron" and wait for it to finish
-
-STEP 6 : Test and launch the app using "npm start" command
