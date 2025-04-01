@@ -11,11 +11,11 @@
   <!-- ✅ Navigation Bar -->
   <nav class="top-nav">
     <div class="nav-logo">
-  <img src="images/logo.png" alt="App Logo" class="nav-logo-img" />
-  <span>Git Security Scanner</span>
-</div>
+      <img src="images/logo.png" alt="App Logo" class="nav-logo-img" />
+      <span>Git Security Scanner</span>
+    </div>
 
-
+    <!-- Action Dropdowns -->
     <div class="nav-dropdown">
       <button class="nav-button">Git Actions ⬇</button>
       <div class="dropdown-content">
@@ -32,43 +32,57 @@
       </div>
     </div>
 
-    <div class="nav-theme">
-      <button id="toggleTheme" class="theme-toggle">🌗 Toggle Theme</button>
+    <!-- Theme + View Switch Tabs -->
+    <div class="nav-actions">
+      <button class="nav-button tab-switch active" data-tab="dashboard">📊 Dashboard</button>
+      <button class="nav-button tab-switch" data-tab="history">🕓 Scan History</button>
+      <button id="toggleTheme" class="theme-toggle">🌗</button>
     </div>
   </nav>
 
-
+  <!-- ✅ Directory Display -->
   <h1>Git Commit Security Scanner</h1>
   <span id="selectedDir">No directory selected</span>
 
-  <div class="app-body">
-  <aside class="sidebar">
-    <h3>📁 Recent Directories</h3>
-    <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
-  </aside>
+  <!-- ✅ Dashboard Tab -->
+  <div class="tab-content" id="dashboardTab">
+    <div class="app-body">
+      <aside class="sidebar">
+        <h3>📁 Recent Directories</h3>
+        <ul id="recentDirsList" class="recent-dirs scrollable-list"></ul>
+      </aside>
 
-  <main class="content-area">
-    <div class="scan-results-wrapper">
-      <div class="chart-card">
-        <section id="scanResultSection">
-          <canvas id="vulnChart"></canvas>
-          <div id="scanTextOutput" class="scan-output"></div>
-        </section>
-      </div>
+      <main class="content-area">
+        <div class="scan-results-wrapper">
+          <div class="chart-card">
+            <section id="scanResultSection">
+              <canvas id="vulnChart"></canvas>
+              <div id="scanTextOutput" class="scan-output"></div>
+            </section>
+          </div>
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
+
+  <!-- ✅ Scan History Tab -->
+  <div class="tab-content hidden" id="historyTab">
+    <div class="scan-history">
+      <h3>🕓 Scan History</h3>
+      <div class="export-controls">
+  <label for="exportFormat">Export Format:</label>
+  <select id="exportFormat">
+    <option value="txt">.txt</option>
+    <option value="pdf">.pdf</option>
+    <option value="md">.md</option>
+  </select>
+  <button id="exportScanButton">📤 Export Last Scan</button>
 </div>
 
-<div class="scan-history">
-  <h3>🕓 Scan History</h3>
-  <ul id="scanHistoryList" class="history-list"></ul>
-</div>
+      <ul id="scanHistoryList" class="history-list"></ul>
+    </div>
+  </div>
 
-
-
-
-
-  <!-- ✅ Main Script -->
   <script defer src="../renderer.js"></script>
 </body>
 </html>

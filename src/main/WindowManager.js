@@ -7,8 +7,8 @@ let remoteWindow;
 
 function createMainWindow() {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1000,
+        height: 800,
         webPreferences: { nodeIntegration: true, contextIsolation: false },
     });
     mainWindow.loadFile(path.join(__dirname, "../renderer/ui/index.html"));

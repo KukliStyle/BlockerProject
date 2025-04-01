@@ -2,17 +2,17 @@ const { ipcMain, dialog } = require("electron");  //  Ensure dialog is imported
 const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,checkGitRemote, ensureBranchAndCommit ,ensureBranchExists , ensureCommitExists, isBranchBehindRemote, pullLatestChanges } = require("./git");
 const { runSnykScan } = require("./snyk");
 const { createCommitWindow, createRemoteWindow } = require("./WindowManager.js");
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit"); 
 
-let Store;
-(async () => {
-  const module = await import("electron-store");
-  Store = module.default;
-
-  const scanStore = new Store({ name: "scan-history" });
-
-  // Make it globally available if needed
-  global.scanStore = scanStore;
-})();
+let store;
+async function initStore() {
+  if (!store) {
+    const Store = (await import("electron-store")).default;
+    store = new Store();
+  }
+}
 
 
 ipcMain.on("open-directory-dialog", async (event) => {
@@ -35,20 +35,34 @@ ipcMain.on("check-git-repo", (event, directory) => {
 });
 
 
-ipcMain.on("run-snyk-scan", (event, directoryPath) => {
-    console.log("🔍 Snyk Scan Requested for:", directoryPath);
+ipcMain.on("run-snyk-scan", async (event, directoryPath) => {
+  if (!directoryPath) {
+    event.reply("snyk-scan-result", "⚠️ No directory selected!");
+    return;
+  }
 
-    if (!directoryPath) {
-        event.reply("snyk-scan-result", "⚠️ No directory selected!");
-        return;
-    }
+  runSnykScan(directoryPath, async (scanResult) => {
+    event.reply("snyk-scan-result", scanResult);
 
-    runSnykScan(directoryPath, (scanResult) => {
-  saveScanResult(directoryPath, scanResult); // ✅ store it
-  event.reply("snyk-scan-result", scanResult);
+    await initStore(); // ensure store is available
+
+    const previous = store.get("scanHistory", []);
+    const newScan = {
+      path: directoryPath,
+      result: scanResult,
+      timestamp: Date.now()
+    };
+
+    previous.push(newScan);
+    store.set("scanHistory", previous);
+
+    // 🔄 Notify renderer to update history list
+    event.sender.send("scan-history-updated");
+  });
 });
 
-});
+
+
 
 ipcMain.on("request-commit-message", (event, directoryPath) => {
     console.log("📝 Opening Commit Window for:", directoryPath);
@@ -304,16 +318,37 @@ ipcMain.on("set-git-remote", (event, directoryPath, remoteUrl) => {
     });
 });
 
-function saveScanResult(directoryPath, scanOutput) {
-  const history = scanStore.get("scans") || [];
-  history.push({
-    timestamp: new Date().toISOString(),
-    path: directoryPath,
-    result: scanOutput
-  });
-  scanStore.set("scans", history);
-}
 
-ipcMain.handle("get-scan-history", () => {
-  return scanStore.get("scans") || [];
+ipcMain.handle("get-scan-history", async () => {
+  await initStore();
+  return store.get("scanHistory", []);
+});
+
+
+ipcMain.handle("export-scan-history", async (event, format) => {
+  await initStore(); // ⬅️ required!
+
+  console.log("📦 Export request received for format:", format);
+
+  const history = store.get("scanHistory", []);
+  if (!history || history.length === 0) {
+    console.log("⚠️ No scan history to export.");
+    return { success: false, message: "No scan history to export." };
+  }
+
+  // Format logic (e.g. .txt)
+  const content = history.map(entry => {
+    return `Directory: ${entry.path}\nTime: ${new Date(entry.timestamp).toLocaleString()}\n\n${entry.result}\n\n---\n`;
+  }).join("\n");
+
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    title: "Save Scan History",
+    defaultPath: `scan-history.${format}`,
+    filters: [{ name: format.toUpperCase(), extensions: [format] }]
+  });
+
+  if (canceled || !filePath) return { success: false, message: "Export canceled." };
+
+  fs.writeFileSync(filePath, content);
+  return { success: true, message: "Export complete!" };
 });

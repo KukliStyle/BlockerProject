@@ -11,16 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedDirElement = document.getElementById("selectedDir");
     const scanResultsElement = document.getElementById("scanResults");
     const issuesWithFixes = [];
-    const aiSuggestedFixes = {
-    "SQL Injection": "Use parameterized queries or an ORM",
-    "Cross-Site Scripting": "Sanitize user inputs and encode HTML output",
-    "Prototype Pollution": "Use safe versions of affected packages or validate object properties",
-    "Command Injection": "Avoid using user input directly in system commands",
-    "Insecure Deserialization": "Do not deserialize untrusted data; use safe parsers",
-    "Open Redirect": "Validate and whitelist redirect URLs",
-    "Arbitrary File Write": "Use secure file system access and validate file paths",
-    "Directory Traversal": "Normalize and validate user-supplied file paths"
-};
+    const exportBtn = document.getElementById("exportBtn");
+    const formatSelector = document.getElementById("exportFormat");
+    
 
 
     let chartInstance = null;
@@ -35,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("📂 Select Directory Clicked!");
         ipcRenderer.send("open-directory-dialog");
     });
-
+     
 ipcRenderer.on("selected-directory", (event, path) => {
   console.log("📂 Selected Directory:", path);
   selectedDirElement.innerText = `📂 Selected: ${path}`;
@@ -302,14 +295,6 @@ function renderRecentDirs() {
   });
 }
 
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  renderRecentDirs();
-  renderScanHistory();
-});
-
 let selectedDirectory = "";
 
 function renderScanHistory() {
@@ -342,3 +327,45 @@ function renderScanHistory() {
     historyList.scrollTop = 0; // Scroll to top after update
   });
 }
+
+
+document.querySelectorAll(".tab-switch").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tab = btn.getAttribute("data-tab");
+
+    // Highlight the selected tab button
+    document.querySelectorAll(".tab-switch").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Show/hide tab content
+    document.querySelectorAll(".tab-content").forEach(tabContent => {
+      tabContent.classList.add("hidden");
+    });
+    document.getElementById(`${tab}Tab`).classList.remove("hidden");
+  });
+});
+
+const exportButton = document.getElementById("exportScanButton");
+const exportFormatSelect = document.getElementById("exportFormat");
+
+if (exportButton && exportFormatSelect) {
+  exportButton.addEventListener("click", async () => {
+    const format = exportFormatSelect.value;
+    console.log("⬇️ Export button clicked - format:", format);
+
+    try {
+      const result = await ipcRenderer.invoke("export-scan-history", format);
+      console.log("📦 Export result:", result);
+      alert(result.message);
+    } catch (err) {
+      console.error("❌ Export failed:", err);
+      alert("An error occurred during export.");
+    }
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderRecentDirs();
+  renderScanHistory();
+});
