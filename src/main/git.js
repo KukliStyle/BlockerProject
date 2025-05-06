@@ -18,7 +18,7 @@ function checkGitStatus(directoryPath, callback) {
             console.error("❌ Git Status Error:", error);
             callback(error, null);
         } else {
-            callback(null, stdout.trim()); // Returns the status output
+            callback(null, stdout.trim());
         }
     });
 }
@@ -55,15 +55,15 @@ function checkGitRemote(directoryPath, callback) {
     exec(`cd "${directoryPath}" && git remote get-url origin`, (error, stdout, stderr) => {
         if (error) {
             console.warn("⚠️ No Git remote found:", stderr);
-            callback(null, false);  // No remote found
+            callback(null, false);
         } else {
             console.log("✅ Git remote URL:", stdout.trim());
-            callback(stdout.trim(), true);  // Remote found
+            callback(stdout.trim(), true);
         }
     });
 }
 
-// Function to set a Git remote (user provides URL)
+// Function to set a Git remote 
 function setGitRemote(directoryPath, remoteUrl, callback) {
     exec(`cd "${directoryPath}" && git remote add origin ${remoteUrl}`, (error, stdout, stderr) => {
         if (error) {
@@ -81,7 +81,7 @@ function getCurrentBranch(directoryPath, callback) {
     exec(`cd "${directoryPath}" && git rev-parse --abbrev-ref HEAD`, (error, stdout, stderr) => {
         if (error) {
             console.error("❌ Error getting current branch:", stderr);
-            callback(null, "main"); // Default to 'main' if error occurs
+            callback(null, "main"); 
         } else {
             const branch = stdout.trim();
             console.log("📂 Current branch detected:", branch);
@@ -105,7 +105,6 @@ function isBranchBehindRemote(directoryPath, branch, callback) {
 }
 
 
-// ✅ Ensure a branch exists (create 'main' if missing)
 function ensureBranchExists(directoryPath, callback) {
     getCurrentBranch(directoryPath, (error, branch) => {
         if (error) {
@@ -130,7 +129,7 @@ function ensureBranchExists(directoryPath, callback) {
     });
 }
 
-// ✅ Ensure there is at least one commit before pushing
+//Ensure there is at least one commit before pushing
 function ensureCommitExists(directoryPath, callback) {
     exec(`cd "${directoryPath}" && git log --oneline`, (error, stdout, stderr) => {
         if (error || !stdout.trim()) {
@@ -150,7 +149,7 @@ function ensureCommitExists(directoryPath, callback) {
     });
 }
 
-// ✅ Ensure both branch and commit exist
+//Ensure both branch and commit exist
 function ensureBranchAndCommit(directoryPath, callback) {
     ensureBranchExists(directoryPath, (branchError, branch) => {
         if (branchError) {
@@ -169,7 +168,7 @@ function ensureBranchAndCommit(directoryPath, callback) {
     });
 }
 
-// ✅ Push changes to the correct branch
+//Push changes to the correct branch
 function pushChanges(directoryPath, branch, callback) {
     console.log(`⬆️ Pushing to '${branch}' branch...`);
 

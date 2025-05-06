@@ -8,14 +8,12 @@
 </head>
 <body>
 
-  <!-- ✅ Navigation Bar -->
   <nav class="top-nav">
     <div class="nav-logo">
       <img src="images/logo.png" alt="App Logo" class="nav-logo-img" />
       <span>Git Security Scanner</span>
     </div>
 
-    <!-- Action Dropdowns -->
     <div class="nav-dropdown">
       <button class="nav-button">Git Actions ⬇</button>
       <div class="dropdown-content">
@@ -34,18 +32,15 @@
       </div>
     </div>
 
-    <!-- Theme + View Switch Tabs -->
     <div class="nav-actions">
       <button class="nav-button tab-switch active" data-tab="dashboard">📊 Dashboard</button>
       <button id="toggleTheme" class="theme-toggle">🌗</button>
     </div>
   </nav>
 
-  <!-- ✅ Directory Display -->
   <h1>Git Commit Security Scanner</h1>
   <span id="selectedDir">No directory selected</span>
 
-  <!-- ✅ Dashboard Tab -->
   <div class="tab-content" id="dashboardTab">
     <div class="app-body">
       <aside class="sidebar">
@@ -71,9 +66,6 @@
   <ul id="gitLogList" class="git-log-list"></ul>
 </div>
 
-
-
-  <!-- ✅ Scan History Tab -->
   <div class="tab-content hidden" id="historyTab">
     <div class="scan-history">
       <h3>🕓 Scan History</h3>

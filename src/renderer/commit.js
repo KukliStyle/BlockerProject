@@ -1,11 +1,10 @@
 const { ipcRenderer } = require("electron");
 
-let selectedDirectory = "";  // Store the directory path
+let selectedDirectory = "";
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("📝 Commit Window Loaded!");
 
-    // ✅ Send this after the renderer is fully ready
     ipcRenderer.send("commit-window-ready");
 
     ipcRenderer.on("set-directory-path", (event, directoryPath) => {

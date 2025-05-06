@@ -82,7 +82,7 @@ function renderRecentDirs() {
       console.log("🖱 Clicked recent directory:", dir);
       localStorage.setItem("lastSelectedDir", dir);
       ipcRenderer.send("simulate-directory-selection", dir);
-      location.reload(); // Optional: refresh to reload git log
+      location.reload();
     });
   });
 }

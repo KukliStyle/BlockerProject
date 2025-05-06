@@ -1,8 +1,7 @@
 const { ipcRenderer } = require("electron");
 
-let selectedDirectory = ""; // Store the directory path
+let selectedDirectory = "";
 
-// Receive the directory path from main.js
 ipcRenderer.on("set-directory-path", (event, directoryPath) => {
     selectedDirectory = directoryPath;
     console.log("📂 Selected directory for remote:", selectedDirectory);

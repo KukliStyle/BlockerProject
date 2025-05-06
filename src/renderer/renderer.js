@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-     // Select directory button event
+     // Select directory button 
      selectDirButton.addEventListener("click", () => {
         console.log("📂 Select Directory Clicked!");
         ipcRenderer.send("open-directory-dialog");
@@ -33,10 +33,10 @@ ipcRenderer.on("selected-directory", (event, path) => {
   console.log("📂 Selected Directory:", path);
   selectedDirElement.innerText = `📂 Selected: ${path}`;
 
-  // ✅ Store it in recent list
+  //Store it in recent list
   storeRecentDirectory(path);
 
-  // ✅ Enable buttons
+  //Enable buttons
   scanButton.disabled = false;
   commitButton.disabled = false;
   pushButton.disabled = false;
@@ -47,7 +47,7 @@ ipcRenderer.on("selected-directory", (event, path) => {
 
 
 
-    // Run security scan
+    //Run security scan
     scanButton.addEventListener("click", () => {
         console.log("🔍 Scan button clicked!");
 
@@ -72,7 +72,7 @@ ipcRenderer.on("selected-directory", (event, path) => {
         info: []
     };
 
-    // Extract lines like "✗ SQL Injection [High Severity]"
+    // Extract lines like "SQL Injection [High Severity]"
     const lines = result.split("\n");
     lines.forEach(line => {
         const match = line.match(/✗ (.*?) \[(High|Medium|Low|Info) Severity\]/i);
@@ -156,8 +156,6 @@ ipcRenderer.on("selected-directory", (event, path) => {
             const list = severityDetails[lower];
 
             if (!list || list.length === 0) return [`${label} (${value}): None`];
-
-            // Chunk lines to prevent very long strings
             const maxPerLine = 1;
             const formatted = [`${label} (${value}):`];
             for (let i = 0; i < list.length; i += maxPerLine) {

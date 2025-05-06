@@ -178,28 +178,6 @@ button {
 }
 
 
-
-
-
-/* Optional: Style the scrollbar for WebKit (Chrome/Edge) */
-.scrollable-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollable-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollable-list::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
-}
-
-body.dark-mode .scrollable-list::-webkit-scrollbar-thumb {
-  background-color: #444;
-}
-
-
 /* ===== Chart & Output Section ===== */
 #vulnChart {
   max-width: 300px;

@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require("electron");  //  Ensure dialog is imported
+const { ipcMain, dialog } = require("electron");
 const { checkGitRepo, checkGitStatus, commitChanges, pushChanges ,setGitRemote ,checkGitRemote, ensureBranchAndCommit ,ensureBranchExists , ensureCommitExists, isBranchBehindRemote, pullLatestChanges } = require("./git");
 const { runSnykScan } = require("./snyk");
 const { createCommitWindow, createRemoteWindow } = require("./WindowManager.js");
@@ -26,8 +26,8 @@ ipcMain.on("open-directory-dialog", async (event) => {
     });
 
     if (!result.canceled && result.filePaths.length > 0) {
-        console.log("📂 Directory Selected:", result.filePaths[0]);  // Debugging
-        event.reply("selected-directory", result.filePaths[0]);  //  Send to renderer
+        console.log("📂 Directory Selected:", result.filePaths[0]);
+        event.reply("selected-directory", result.filePaths[0]);
     } else {
         console.log("⚠️ Directory selection was canceled");
     }
@@ -47,7 +47,7 @@ ipcMain.on("run-snyk-scan", async (event, directoryPath) => {
   runSnykScan(directoryPath, async (scanResult) => {
     event.reply("snyk-scan-result", scanResult);
 
-    await initStore(); // ensure store is available
+    await initStore();
 
     const previous = store.get("scanHistory", []);
     const newScan = {
@@ -59,7 +59,7 @@ ipcMain.on("run-snyk-scan", async (event, directoryPath) => {
     previous.push(newScan);
     store.set("scanHistory", previous);
 
-    // 🔄 Notify renderer to update history list
+    //Notify renderer to update history list
     event.sender.send("scan-history-updated");
   });
 });
@@ -76,10 +76,10 @@ ipcMain.on("request-commit-message", (event, directoryPath) => {
         return;
     }
 
-    //  Open the commit message window
+    //Open the commit message window
     createCommitWindow();
 
-    //  Ensure the commit window receives the directory path
+    //Ensure the commit window receives the directory path
     ipcMain.once("commit-window-ready", (commitEvent) => {
         console.log("📂 Sending directory to commit window:", directoryPath);
         commitEvent.sender.send("set-directory-path", directoryPath);
@@ -101,7 +101,7 @@ ipcMain.on("push-changes", (event, directoryPath) => {
         return;
     }
 
-    // ✅ Step 1: Run Snyk scan first
+    //Run Snyk scan first
     runSnykScan(directoryPath, (scanResult) => {
         console.log("🔍 Pre-push Snyk Scan Result:\n", scanResult);
 
@@ -116,10 +116,10 @@ ipcMain.on("push-changes", (event, directoryPath) => {
 
             event.sender.send("scan-history-updated");
             event.reply("push-result", "❌ Push blocked: vulnerabilities detected.");
-            return; // ✅ Prevents any push logic from continuing
+            return; //Prevents any push logic from continuing
         }
 
-        // ✅ Step 2: Continue with remote + branch checks
+        //Continue with remote + branch checks
         checkGitRemote(directoryPath, (remoteUrl, hasRemote) => {
             if (!hasRemote) {
                 createRemoteWindow();
@@ -194,10 +194,10 @@ ipcMain.on("push-changes", (event, directoryPath) => {
                             }
                         });
 
-                        return; // ✅ Critical: prevents fallthrough push
+                        return; //prevents push
                     }
 
-                    // ✅ Final push if branch is up-to-date
+                    //Final push if branch is up to date
                     pushChanges(directoryPath, branch, (error, result) => {
                         let message = "";
                         let type = "info";
@@ -339,7 +339,7 @@ ipcMain.handle("export-scan-history", async (event, format) => {
     return { success: false, message: "No scan history to export." };
   }
 
-  // Format logic (e.g. .txt)
+  // Format logic (eg txt pdf etc..)
   const content = history.map(entry => {
     return `Directory: ${entry.path}\nTime: ${new Date(entry.timestamp).toLocaleString()}\n\n${entry.result}\n\n---\n`;
   }).join("\n");
@@ -375,7 +375,7 @@ ipcMain.handle("get-git-log", async (event, directoryPath) => {
         return { hash, author, date, message, diff: "" };
       });
 
-      // Fetch diffs for each commit using `git show`
+      // Fetch differences for each commit using git show
       const fetchDiffs = commits.map(commit => {
         return new Promise((res) => {
           exec(`git show ${commit.hash} --stat --oneline --no-color`, { cwd: directoryPath }, (err, diffOut) => {

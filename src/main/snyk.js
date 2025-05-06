@@ -6,21 +6,21 @@ const path = require("path");
 function runSnykScan(directoryPath, callback) {
     console.log("🔍 Starting Snyk scan on:", directoryPath);
 
-    // 1️⃣ Check if package.json exists
+    //Check if package.json exists
     const packageJsonPath = path.join(directoryPath, "package.json");
     if (!fs.existsSync(packageJsonPath)) {
         callback("⚠️ No package.json found in selected directory.\nSnyk requires a valid project to scan.");
         return;
     }
 
-    // 2️⃣ Check if node_modules exists
+    //Check if node_modules exists
     const nodeModulesPath = path.join(directoryPath, "node_modules");
     if (!fs.existsSync(nodeModulesPath)) {
         callback("⚠️ Missing node_modules folder. Run `npm install` in this directory before scanning.");
         return;
     }
 
-    // 3️⃣ Check if npx is available
+    //Check if npx is available
     const isWindows = os.platform() === "win32";
     const checkCommand = isWindows ? "where" : "which";
 
@@ -31,7 +31,7 @@ function runSnykScan(directoryPath, callback) {
             return;
         }
 
-        // 4️⃣ Proceed with scan if everything checks out
+        //Proceed with scan if everything checks out
         const command = isWindows ? "cmd.exe" : "npx";
         const args = isWindows ? ["/c", "npx", "snyk", "test"] : ["snyk", "test"];
 
